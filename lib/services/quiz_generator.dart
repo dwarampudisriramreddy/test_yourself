@@ -71,6 +71,12 @@ class QuizGenerator {
   static Future<void> installModel({
     void Function(int progress)? onProgress,
   }) async {
+    if (!modelUrl.toLowerCase().endsWith('.litertlm')) {
+      throw const QuizGenerationException(
+        'MODEL_URL must point to a .litertlm file. '
+        'The LiteRT-LM engine cannot load .task/.tflite models.',
+      );
+    }
     await FlutterGemma.installModel(modelType: modelType)
         .fromNetwork(modelUrl, token: _hfToken.isNotEmpty ? _hfToken : null)
         .withProgress(onProgress ?? (_) {})
