@@ -77,7 +77,10 @@ class QuizGenerator {
         'The LiteRT-LM engine cannot load .task/.tflite models.',
       );
     }
-    await FlutterGemma.installModel(modelType: modelType)
+    await FlutterGemma.installModel(
+      modelType: modelType,
+      fileType: ModelFileType.litertlm,
+    )
         .fromNetwork(modelUrl, token: _hfToken.isNotEmpty ? _hfToken : null)
         .withProgress(onProgress ?? (_) {})
         .install();
