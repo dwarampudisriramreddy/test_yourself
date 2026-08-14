@@ -1,4 +1,4 @@
-package com.ram.testai
+package com.ram.test_yourself
 
 import io.flutter.embedding.android.FlutterActivity
 

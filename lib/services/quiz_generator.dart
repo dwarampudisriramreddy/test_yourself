@@ -108,6 +108,11 @@ class QuizGenerator {
     required int questionCount,
     required String difficulty,
   }) async {
+    if (!await isModelInstalled()) {
+      throw const QuizGenerationException(
+        'The quiz model is not downloaded yet. Tap "Download Model" first.',
+      );
+    }
     final model = await _ensureModel();
     final chat = await model.createChat(
       systemInstruction:

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ram.testai"
+    namespace = "com.ram.test_yourself"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ram.testai"
+        applicationId = "com.ram.test_yourself"
         // flutter_gemma_litertlm ships native prebuilts for arm64-v8a only.
         ndk {
             abiFilters += listOf("arm64-v8a")
