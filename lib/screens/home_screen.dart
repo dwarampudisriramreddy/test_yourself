@@ -194,13 +194,13 @@ class _HomeScreenState extends State<HomeScreen> {
       _ModelStatus.checking => (
           Icons.settings,
           'Checking on-device model…',
-          'Looking for Gemma 3 1B IT',
+          'Looking for ${QuizGenerator.modelDisplayName}',
           null,
         ),
       _ModelStatus.notInstalled => (
           Icons.download_for_offline_outlined,
           'Model not installed',
-          'Download Gemma 3 1B (~0.5 GB, one time)',
+          'Download ${QuizGenerator.modelDisplayName} (one time)',
           'Download',
         ),
       _ModelStatus.installing => (
@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _ModelStatus.installed => (
           Icons.offline_pin,
           'Model ready — 100% offline',
-          'Gemma 3 1B IT generates quizzes on-device',
+          '${QuizGenerator.modelDisplayName} generates quizzes on-device',
           null,
         ),
     };
