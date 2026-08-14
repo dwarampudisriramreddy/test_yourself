@@ -119,45 +119,69 @@ class QuizGenerator {
     final model = await _ensureModel();
     final chat = await model.createChat(
       systemInstruction:
-          'You are a quiz generator. Respond with ONLY a single valid JSON '
-          'object. Never use markdown, code fences, or any other text.',
+          'You are a quiz generator. Respond ONLY with a valid JSON object. '
+          'Do not include introductory or concluding text.',
       maxOutputTokens: 2500,
     );
 
     final prompt = '''
-Generate a multiple-choice quiz as strict JSON.
-
-Topic: $topic
-Number of questions: $questionCount
+Generate a multiple-choice quiz about $topic.
 Difficulty: $difficulty
+Number of questions: $questionCount
 
-Use EXACTLY this schema. "answer" is the 0-based index of the correct option:
-
-{"topic": "$topic", "questions": [{"question": "?", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "why"}]}
-
+You MUST respond with ONLY a single JSON object in this exact format:
+```json
+{
+  "topic": "$topic",
+  "questions": [
+    {
+      "question": "question text here",
+      "options": ["A", "B", "C", "D"],
+      "answer": 0,
+      "explanation": "concise explanation here"
+    }
+  ]
+}
+```
 Rules:
 - Exactly $questionCount questions.
 - Every question has exactly 4 options.
 - "answer" must be the 0-based index (0..3) of the correct option.
-- Explanations must be one concise sentence.
-- Output ONLY the JSON object, nothing else.''';
+- Output ONLY valid JSON.''';
 
     try {
       await chat.addQueryChunk(Message.text(text: prompt, isUser: true));
-      final response = await chat.generateChatResponse();
+      final stream = chat.generateChatResponseAsync();
 
-      final text = switch (response) {
-        TextResponse(:final token) => token,
-        _ => '',
-      };
+      String accumulatedText = '';
+      Quiz? parsedQuiz;
 
-      final quiz = Quiz.tryParseJson(text);
-      if (quiz == null) {
+      await for (final response in stream) {
+        final textChunk = switch (response) {
+          TextResponse(:final token) => token,
+          _ => '',
+        };
+        accumulatedText += textChunk;
+
+        // Try to parse early if we see a closing brace
+        if (textChunk.contains('}')) {
+          parsedQuiz = Quiz.tryParseJson(accumulatedText);
+          if (parsedQuiz != null && parsedQuiz.questions.length == questionCount) {
+            break; // We have our valid quiz, stop generating to save time!
+          }
+        }
+      }
+
+      if (parsedQuiz == null) {
+        parsedQuiz = Quiz.tryParseJson(accumulatedText);
+      }
+
+      if (parsedQuiz == null) {
         throw const QuizGenerationException(
           'The model did not return valid quiz JSON. Please try again.',
         );
       }
-      return quiz;
+      return parsedQuiz;
     } finally {
       await chat.close();
     }
