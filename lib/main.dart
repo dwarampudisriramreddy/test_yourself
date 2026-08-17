@@ -3,9 +3,13 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 
 import 'screens/home_screen.dart';
+import 'utils/debug_logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Override global debug print to also show on screen
+  debugPrint = DebugLogger.print;
 
   const token = String.fromEnvironment('HUGGINGFACE_TOKEN');
   try {

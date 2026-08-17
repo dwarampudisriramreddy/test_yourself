@@ -91,15 +91,19 @@ class QuizGenerator {
   static Future<InferenceModel> _ensureModel() async {
     if (_model != null) return _model!;
     try {
+      debugPrint('Attempting to load model on GPU...');
       _model = await FlutterGemma.getActiveModel(
-        maxTokens: 4096,
+        maxTokens: 1024,
         preferredBackend: PreferredBackend.gpu,
       );
-    } catch (_) {
+      debugPrint('Successfully loaded on GPU!');
+    } catch (e) {
+      debugPrint('GPU load failed: $e. Falling back to CPU...');
       _model = await FlutterGemma.getActiveModel(
-        maxTokens: 4096,
+        maxTokens: 1024,
         preferredBackend: PreferredBackend.cpu,
       );
+      debugPrint('Loaded on CPU (this will be slow).');
     }
     return _model!;
   }
@@ -121,7 +125,7 @@ class QuizGenerator {
       systemInstruction:
           'You are a quiz generator. Respond ONLY with a valid JSON object. '
           'Do not include introductory or concluding text.',
-      maxOutputTokens: 2500,
+      maxOutputTokens: 1024,
     );
 
     final prompt = '''

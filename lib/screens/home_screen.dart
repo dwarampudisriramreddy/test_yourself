@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/quiz.dart';
 import '../services/quiz_generator.dart';
+import '../utils/debug_logger.dart';
 import 'quiz_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -180,6 +181,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
+              const SizedBox(height: 24),
+              const DebugConsoleWidget(),
             ],
           ),
         ),
